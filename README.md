@@ -1,7 +1,6 @@
 # garage-appv3
 Version 3 of the garage app
 
-Garage app version 2 med listor.
 Finns implementerat:
 Nivå 1: Huvudmeny
    - Skapa ett nytt garage (inkl populera det direkt)
