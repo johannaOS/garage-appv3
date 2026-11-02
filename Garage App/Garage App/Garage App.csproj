@@ -8,4 +8,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Garage\" />
+    <Folder Include="Vehicle\" />
+  </ItemGroup>
+
 </Project>
