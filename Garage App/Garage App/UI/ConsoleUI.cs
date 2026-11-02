@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Garage_App.GarageHandling;
 
 namespace Garage_App.UI
 {
     internal class ConsoleUI : IUI
     {
+        private readonly IGarageHandler _handler;
+        public ConsoleUI(IGarageHandler handler) //constructor
+        {
+            _handler = handler;
+        }
+
         public void Run()
         {
             var MainMenu = new Main()
@@ -33,7 +40,7 @@ namespace Garage_App.UI
                             {
                                 Garage newGarage = MainMenu.CreateNewGarage();
                                 myGarages.Add(newGarage);
-                                Populate(newGarage);
+                                Populate(newGarage, _handler);
                                 break;
                             }
                             catch (Exception ex) { Console.WriteLine(ex.Message); break; }
@@ -43,7 +50,7 @@ namespace Garage_App.UI
                     case "2":
                         if (myGarages.Count == 0) { Console.WriteLine("!! Du har inga garage än! !!"); break; }
                         var selectedGarage = SelectGarage(myGarages);
-                        RunGarageMenu(selectedGarage);
+                        RunGarageMenu(selectedGarage, _handler);
                         break;
                     default:
                         Console.WriteLine("Ange ett giltigt val!");
@@ -74,7 +81,7 @@ namespace Garage_App.UI
                 }
             }
         }
-        static void RunGarageMenu(Garage selectedGarage)
+        static void RunGarageMenu(Garage selectedGarage, IGarageHandler handler)
         {
             var garageMenu = new Menu()
             {
@@ -97,7 +104,7 @@ namespace Garage_App.UI
                     case "1":
                         try
                         {
-                            CheckIn(selectedGarage);
+                            handler.CheckIn(selectedGarage);
                         }
                         catch (Exception ex) { Console.WriteLine(ex.Message); }
                         break;
@@ -109,7 +116,7 @@ namespace Garage_App.UI
                         selectedGarage.ListParkedVehicles();
                         break;
                     case "4":
-                        try { RunSearchMenu(selectedGarage); }
+                        try { RunSearchMenu(selectedGarage, handler); }
                         catch (Exception ex) { Console.WriteLine(ex.Message); }
                         break;
                     default:
@@ -119,7 +126,7 @@ namespace Garage_App.UI
             }
 
         }
-        static void RunSearchMenu(Garage selectedGarage)
+        static void RunSearchMenu(Garage selectedGarage, IGarageHandler handler)
         {
             //Kolla att garaget inte är tomt
             if (selectedGarage.GetAvailableSpaces(false) == selectedGarage.Spaces)
@@ -145,7 +152,7 @@ namespace Garage_App.UI
                         break;
                     case "1":
                         Console.WriteLine("Ange registreringsnumret du vill söka på:");
-                        string regNr = GetRegNr();
+                        string regNr = handler.GetRegNr();
                         int plats = -1;
                         if (selectedGarage.SearchByRegNr(regNr, ref plats))
                             Console.WriteLine($"Fordonet finns på plats {plats}\n");
@@ -154,7 +161,7 @@ namespace Garage_App.UI
                         //Sök på registreringsskylt
                         break;
                     case "2":
-                        RunSearchInVehiclesMenu(selectedGarage);
+                        RunSearchInVehiclesMenu(selectedGarage, handler);
                         break;
                     default:
                         Console.WriteLine("Ange ett giltigt alternativ!");
@@ -162,7 +169,7 @@ namespace Garage_App.UI
                 }
             }
         }
-        static void RunSearchInVehiclesMenu(Garage selectedGarage)
+        static void RunSearchInVehiclesMenu(Garage selectedGarage, IGarageHandler handler)
         {
             var searchMenu = new Menu()
             {
@@ -188,7 +195,7 @@ namespace Garage_App.UI
                     case "1":
                         // T ex alla registreringsnummer som innehåller "f"
                         Console.Write("Skriv din sökfras: ");
-                        string searchRegNr = GetRegNr();
+                        string searchRegNr = handler.GetRegNr();
                         List<Vehicle> searchRegResult = selectedGarage.SearchInRegNr(searchRegNr);
                         AddToSearchResult(searchResult, searchRegResult);
                         searchPhrase += " + " + searchRegNr;
@@ -220,7 +227,7 @@ namespace Garage_App.UI
                 }
             }
         }
-        static bool CheckIn(Garage garage)
+        /*static bool CheckIn(Garage garage)
         {
             int availableSpaces = garage.GetAvailableSpaces();
             if (availableSpaces > 0)
@@ -254,8 +261,8 @@ namespace Garage_App.UI
             else
                 throw new ArgumentException("Det här garaget är fullt!");
         }
-
-        static Vehicle CreateVehicle(string choice, Garage garage)
+        */
+/*        static Vehicle CreateVehicle(string choice, Garage garage)
         {
             switch (choice)
             {
@@ -382,8 +389,8 @@ namespace Garage_App.UI
             }
             throw new ArgumentException("Det här fordonet finns redan i garaget!");
         }
-
-        static string ValidateRegNr(Garage garage)
+        */
+ /*       static string ValidateRegNr(Garage garage)
         {
             Console.Write("Ange registreringsnummer (obligatoriskt): ");
             string regNr = GetRegNr();
@@ -394,8 +401,8 @@ namespace Garage_App.UI
             else
                 return regNr;
 
-        }
-        static string GetRegNr()
+        }*/
+  /*      static string GetRegNr()
         {
             string _regNr = (Console.ReadLine() ?? "").Trim().Replace(" ", "").ToUpper();
             while (String.IsNullOrEmpty(_regNr) || _regNr.Length > 12)
@@ -404,9 +411,9 @@ namespace Garage_App.UI
                 _regNr = (Console.ReadLine() ?? "").Trim().Replace(" ", "").ToUpper();
             }
             return _regNr;
-        }
+        }*/
 
-        static string ValidateColor()
+     /*   static string ValidateColor()
         {
             Console.Write("Ange färg (obligatoriskt): ");
             while (true)
@@ -420,8 +427,8 @@ namespace Garage_App.UI
                 }
                 catch (Exception ex) { Console.WriteLine(ex.Message); }
             }
-        }
-        static int? ValidateNrOfWheels()
+        }*/
+    /*    static int? ValidateNrOfWheels()
         {
             Console.Write("Ange antal hjul (tryck 0 för att hoppa över denna): ");
             int nrOfwheels;
@@ -435,8 +442,8 @@ namespace Garage_App.UI
                 else
                     Console.WriteLine("Du måste ange ett giltigt antal hjul!");
             }
-        }
-        static double ValidateLength()
+        }*/
+    /*    static double ValidateLength()
         {
             Console.Write("Ange längd på fordonet (obligatorisk): ");
             double length;
@@ -448,7 +455,7 @@ namespace Garage_App.UI
                 else
                     Console.WriteLine("Du måste ange en giltig längd!");
             }
-        }
+        }*/
 
         static void AddToSearchResult(List<Vehicle> oldSearchResult, List<Vehicle> newSearchResult)
         {
@@ -495,7 +502,7 @@ namespace Garage_App.UI
             }
             return userInput;
         }
-        static bool Populate(Garage newGarage)
+        static bool Populate(Garage newGarage, IGarageHandler handler)
         {
             Console.WriteLine("Vill du populera garaget direkt? (y/n)");
             string userResponse = (Console.ReadLine() ?? "").Trim().ToLower();
@@ -519,7 +526,7 @@ namespace Garage_App.UI
                     {
                         try
                         {
-                            if (CheckIn(newGarage))
+                            if (handler.CheckIn(newGarage))
                                 count++;
                             else
                                 break;

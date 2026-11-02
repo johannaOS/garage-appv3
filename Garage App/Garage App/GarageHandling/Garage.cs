@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Garage_App
+namespace Garage_App.GarageHandling
 {
     public class Garage
     {
