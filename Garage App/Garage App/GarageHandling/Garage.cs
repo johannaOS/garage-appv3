@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Garage_App.VehicleHandling;
 
 namespace Garage_App.GarageHandling
 {
