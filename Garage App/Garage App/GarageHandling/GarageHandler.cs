@@ -192,7 +192,7 @@ namespace Garage_App.GarageHandling
             }
             return _regNr;
         }
-        static string ValidateColor()
+        public string ValidateColor()
         {
             Console.Write("Ange färg (obligatoriskt): ");
             while (true)
@@ -207,7 +207,7 @@ namespace Garage_App.GarageHandling
                 catch (Exception ex) { Console.WriteLine(ex.Message); }
             }
         }
-        static int? ValidateNrOfWheels()
+        public int? ValidateNrOfWheels()
         {
             Console.Write("Ange antal hjul (tryck 0 för att hoppa över denna): ");
             int nrOfwheels;
@@ -222,7 +222,7 @@ namespace Garage_App.GarageHandling
                     Console.WriteLine("Du måste ange ett giltigt antal hjul!");
             }
         }
-        static double ValidateLength()
+        public double ValidateLength()
         {
             Console.Write("Ange längd på fordonet (obligatorisk): ");
             double length;
