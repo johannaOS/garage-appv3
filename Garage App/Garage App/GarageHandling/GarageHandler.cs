@@ -43,7 +43,7 @@ namespace Garage_App.GarageHandling
                 throw new ArgumentException("Det här garaget är fullt!");
         }
 
-        static Vehicle CreateVehicle(string choice, Garage garage)
+        public Vehicle CreateVehicle(string choice, Garage garage)
         {
             switch (choice)
             {
@@ -170,7 +170,7 @@ namespace Garage_App.GarageHandling
             }
             throw new ArgumentException("Det här fordonet finns redan i garaget!");
         }
-        static string ValidateRegNr(Garage garage)
+        public string ValidateRegNr(Garage garage)
         {
             Console.Write("Ange registreringsnummer (obligatoriskt): ");
             string regNr = GetRegNr();
