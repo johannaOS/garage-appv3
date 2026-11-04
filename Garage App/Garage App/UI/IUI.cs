@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Garage_App.UI
 {
-    internal interface IUI
+    public interface IUI
     {
         public void Run();
     }

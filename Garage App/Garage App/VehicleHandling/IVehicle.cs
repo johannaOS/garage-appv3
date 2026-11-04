@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Garage_App.VehicleHandling
 {
-    internal interface IVehicle
+    public interface IVehicle
     {
         public string Type { get; }
         public string RegNr { get; }

@@ -1,188 +1,222 @@
 ﻿using Garage_App.VehicleHandling;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Text;
 
 namespace Garage_App.GarageHandling
 {
-    internal class GarageHandler : IGarageHandler
+    public class GarageHandler : IGarageHandler
     {
-        public List<Garage> Garages { get; }
-
-        public bool CheckIn(Garage garage)
+        public List<Garage<IVehicle>> Garages { get; } = new();
+        public void CreateNewGarage(string name, int spaces)
         {
-            int availableSpaces = garage.GetAvailableSpaces();
-            if (availableSpaces > 0)
+            //Get garage name
+/*            Console.WriteLine("(Tryck 9 för att komma tillbaka till huvudmenyn)\nNamnge ditt garage:");
+            string? name = (Console.ReadLine() ?? "").Trim().Replace("  ", " ");
+            while (String.IsNullOrEmpty(name))
             {
-                Console.WriteLine("Vilket typ av fordon vill du checka in?\n1: Motorcykel\t2: Flygplan\t3: Bil\t4: Buss\t5: Båt\t0: Avbryt"); //fyll på här när nya Vehicleklasser skapats
-                string userChoice;
-                while (true)
+                Console.WriteLine("Garaget måste ha ett namn!");
+                name = Console.ReadLine();
+            }*/
+            //Cancel if user chose to get back to menue
+         /*   if (name != "9")
+            {   // Get amount of spaces
+                Console.WriteLine($"Ange hur många parkeringsplatser som finns i {name}");
+                int parkingSpaces;
+                while (!int.TryParse(Console.ReadLine(), out parkingSpaces) || parkingSpaces <= 0)
+                    Console.WriteLine("Du måste ange ett giltigt antal!");
+                //Confirm amount of spaces
+                Console.WriteLine($"Du har angivit {parkingSpaces} parkeringsplatser. Stämmer det? (y/n)");
+                string? confirmationResponse = (Console.ReadLine() ?? "").Trim();
+                if (confirmationResponse == "n")
                 {
-                    userChoice = (Console.ReadLine() ?? "").Trim();
-                    if (userChoice == "0")
-                        return false;
-                    else if (new string[] { "1", "2", "3", "4", "5" }.Contains(userChoice))
+                    Console.WriteLine($"Ange hur många parkeringsplatser som finns i {name}");
+                    while (!int.TryParse(Console.ReadLine(), out parkingSpaces) || parkingSpaces <= 0)
+                        Console.WriteLine("Du måste ange ett giltigt antal!");
+                }*/
+                //Go ahead with creating a garage object
+                    Garages.Add( new Garage<IVehicle>(name, spaces));
+         /*   }
+            else
+                throw new ArgumentException("Uknown error in CreateNewGarage");*/
+
+        }
+
+        /*        public bool CheckIn(Garage garage)
+                {
+                    int availableSpaces = garage.GetAvailableSpaces();
+                    if (availableSpaces > 0)
                     {
-                        try
+                        Console.WriteLine("Vilket typ av fordon vill du checka in?\n1: Motorcykel\t2: Flygplan\t3: Bil\t4: Buss\t5: Båt\t0: Avbryt"); //fyll på här när nya Vehicleklasser skapats
+                        string userChoice;
+                        while (true)
                         {
-                            garage.CheckInVehicle(
-                            CreateVehicle(userChoice, garage)
-                            );
-                            return true;
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                            return false;
+                            userChoice = (Console.ReadLine() ?? "").Trim();
+                            if (userChoice == "0")
+                                return false;
+                            else if (new string[] { "1", "2", "3", "4", "5" }.Contains(userChoice))
+                            {
+                                try
+                                {
+                                    garage.CheckInVehicle(
+                                    CreateVehicle(userChoice, garage)
+                                    );
+                                    return true;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex.Message);
+                                    return false;
+                                }
+                            }
+                            else
+                                Console.WriteLine("Ange ett giltigt val!");
                         }
                     }
                     else
-                        Console.WriteLine("Ange ett giltigt val!");
+                        throw new ArgumentException("Det här garaget är fullt!");
+                }*/
+
+        /*        public Vehicle CreateVehicle(string choice, Garage garage)
+                {
+                    switch (choice)
+                    {
+                        case "1": //motorcykel
+                            {
+                                string regNr;
+                                try
+                                {
+                                    regNr = ValidateRegNr(garage);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new ArgumentException(ex.Message);
+                                }
+                                string color = ValidateColor();
+                                int? nrOfWheels = ValidateNrOfWheels();
+
+                                //instanciera en ny motorcykel
+                                try
+                                {
+                                    var motorcycle = new MotorCycle(regNr, color, nrOfWheels);
+                                    return motorcycle;
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new ArgumentException(ex.Message);
+                                }
+                            }
+                        case "2": //flygplan
+                            {
+                                string regNr;
+                                try
+                                {
+                                    regNr = ValidateRegNr(garage);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new ArgumentException(ex.Message);
+                                }
+                                string color = ValidateColor();
+                                double length = ValidateLength();
+
+                                try
+                                {
+                                    var airplane = new Airplane(regNr, color, length);
+                                    return airplane;
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new ArgumentException(ex.Message);
+                                }
+                            }
+                        case "3": //bil
+                            {
+                                string regNr;
+                                try
+                                {
+                                    regNr = ValidateRegNr(garage);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new ArgumentException(ex.Message);
+                                }
+                                string color = ValidateColor();
+
+                                try
+                                {
+                                    var car = new Car(regNr, color);
+                                    return car;
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new ArgumentException(ex.Message);
+                                }
+                            }
+                        case "4": //buss
+                            {
+                                string regNr;
+                                try
+                                {
+                                    regNr = ValidateRegNr(garage);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new ArgumentException(ex.Message);
+                                }
+                                string color = ValidateColor();
+
+                                try
+                                {
+                                    var bus = new Bus(regNr, color);
+                                    return bus;
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new ArgumentException(ex.Message);
+                                }
+                            }
+                        case "5": //båt
+                            {
+                                string regNr;
+                                try
+                                {
+                                    regNr = ValidateRegNr(garage);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new ArgumentException(ex.Message);
+                                }
+                                string color = ValidateColor();
+
+                                try
+                                {
+                                    var boat = new Boat(regNr, color);
+                                    return boat;
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new ArgumentException(ex.Message);
+                                }
+                            }
+                        default:
+                            break;
+                    }
+                    throw new ArgumentException("Det här fordonet finns redan i garaget!");
                 }
-            }
-            else
-                throw new ArgumentException("Det här garaget är fullt!");
-        }
+                public string ValidateRegNr(Garage garage)
+                {
+                    Console.Write("Ange registreringsnummer (obligatoriskt): ");
+                    string regNr = GetRegNr();
+                    //Check that _regNr is unique (in garage)
+                    int dummyIndex = -1;
+                    if (garage.SearchByRegNr(regNr, ref dummyIndex))
+                        throw new ArgumentException("Det här fordonet finns redan i garaget!");
+                    else
+                        return regNr;
 
-        public Vehicle CreateVehicle(string choice, Garage garage)
-        {
-            switch (choice)
-            {
-                case "1": //motorcykel
-                    {
-                        string regNr;
-                        try
-                        {
-                            regNr = ValidateRegNr(garage);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ArgumentException(ex.Message);
-                        }
-                        string color = ValidateColor();
-                        int? nrOfWheels = ValidateNrOfWheels();
-
-                        //instanciera en ny motorcykel
-                        try
-                        {
-                            var motorcycle = new MotorCycle(regNr, color, nrOfWheels);
-                            return motorcycle;
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ArgumentException(ex.Message);
-                        }
-                    }
-                case "2": //flygplan
-                    {
-                        string regNr;
-                        try
-                        {
-                            regNr = ValidateRegNr(garage);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ArgumentException(ex.Message);
-                        }
-                        string color = ValidateColor();
-                        double length = ValidateLength();
-
-                        try
-                        {
-                            var airplane = new Airplane(regNr, color, length);
-                            return airplane;
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ArgumentException(ex.Message);
-                        }
-                    }
-                case "3": //bil
-                    {
-                        string regNr;
-                        try
-                        {
-                            regNr = ValidateRegNr(garage);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ArgumentException(ex.Message);
-                        }
-                        string color = ValidateColor();
-
-                        try
-                        {
-                            var car = new Car(regNr, color);
-                            return car;
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ArgumentException(ex.Message);
-                        }
-                    }
-                case "4": //buss
-                    {
-                        string regNr;
-                        try
-                        {
-                            regNr = ValidateRegNr(garage);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ArgumentException(ex.Message);
-                        }
-                        string color = ValidateColor();
-
-                        try
-                        {
-                            var bus = new Bus(regNr, color);
-                            return bus;
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ArgumentException(ex.Message);
-                        }
-                    }
-                case "5": //båt
-                    {
-                        string regNr;
-                        try
-                        {
-                            regNr = ValidateRegNr(garage);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ArgumentException(ex.Message);
-                        }
-                        string color = ValidateColor();
-
-                        try
-                        {
-                            var boat = new Boat(regNr, color);
-                            return boat;
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ArgumentException(ex.Message);
-                        }
-                    }
-                default:
-                    break;
-            }
-            throw new ArgumentException("Det här fordonet finns redan i garaget!");
-        }
-        public string ValidateRegNr(Garage garage)
-        {
-            Console.Write("Ange registreringsnummer (obligatoriskt): ");
-            string regNr = GetRegNr();
-            //Check that _regNr is unique (in garage)
-            int dummyIndex = -1;
-            if (garage.SearchByRegNr(regNr, ref dummyIndex))
-                throw new ArgumentException("Det här fordonet finns redan i garaget!");
-            else
-                return regNr;
-
-        }
+                }*/
         public string GetRegNr()
         {
             string _regNr = (Console.ReadLine() ?? "").Trim().Replace(" ", "").ToUpper();

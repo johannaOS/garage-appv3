@@ -6,7 +6,7 @@ using Garage_App.VehicleHandling;
 
 namespace Garage_App.UI
 {
-    internal class ConsoleUI : IUI
+    public class ConsoleUI : IUI
     {
         private readonly IGarageHandler _handler;
         public ConsoleUI(IGarageHandler handler) //constructor
@@ -16,14 +16,13 @@ namespace Garage_App.UI
 
         public void Run()
         {
-            var MainMenu = new Main()
+            var MainMenu = new Main() //behöver ingen child klass Main menu längre
             {
                 WelcomeMessage = "************** Välkommen till Epic Garage App! ***************\n",
                 NrMenuOptions = 3,
                 MenuOptions = new List<string> { "0: avsluta programmet\t", "1: Skapa ett nytt garage\t", "2: Hantera ett av mina garage\n" }
             };
 
-            var myGarages = new List<Garage>();
             bool programOn = true;
             while (programOn)
             {
@@ -39,19 +38,22 @@ namespace Garage_App.UI
                         { // the braces create a block scope, meaning the newGarage instance will only excist here
                             try
                             {
-                                Garage newGarage = MainMenu.CreateNewGarage();
-                                myGarages.Add(newGarage);
-                                Populate(newGarage, _handler);
+                                //To do: Methods for collecting data for name and spaces for garage3
+                                //To do: handle name duplicates
+                                _handler.CreateNewGarage("namndummy", 1);
+                             //   To do: Populate(newGarage, _handler);
                                 break;
                             }
                             catch (Exception ex) { Console.WriteLine(ex.Message); break; }
-
                         }
-
                     case "2":
-                        if (myGarages.Count == 0) { Console.WriteLine("!! Du har inga garage än! !!"); break; }
-                        var selectedGarage = SelectGarage(myGarages);
-                        RunGarageMenu(selectedGarage, _handler);
+                        try
+                        {
+                            int selectedIndex = SelectGarage(_handler);
+                        }
+                        catch (Exception ex) { Console.WriteLine(ex.Message); break; }
+
+                        /*RunGarageMenu(selectedGarage, _handler);*/
                         break;
                     default:
                         Console.WriteLine("Ange ett giltigt val!");
@@ -60,29 +62,27 @@ namespace Garage_App.UI
             }
         }
 
-        static Garage SelectGarage(List<Garage> myGarages)
+        public int SelectGarage(IGarageHandler handler)
         {
-            Console.WriteLine("Vilka av dina garage vill du hantera?");
-            foreach (var garage in myGarages)
-                Console.Write($"{myGarages.IndexOf(garage)}: {garage.Name}\t");
+            if (_handler.Garages.Count == 0) { throw new ArgumentException("!! Du har inga garage än! !!");  }
+
+            Console.WriteLine("Vilka av dina garage vill du hantera?\nO: Avbryt");
+            foreach (var garage in _handler.Garages) Console.WriteLine($"{_handler.Garages.IndexOf(garage) + 1}: {garage.Name} med {garage.Spaces} platser.");
             Console.WriteLine();
             int userSelection = -1;
+            string? getInput;
             while (true)
             {
-                try
-                {
-                    if (int.TryParse(Console.ReadLine(), out userSelection) && userSelection >= 0 && userSelection < myGarages.Count)
-                        return myGarages[userSelection];
-                    else
-                        throw new ArgumentException("Du måste ange ett giltigt val!\n");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                getInput = Console.ReadLine();
+                if (getInput == "0")
+                    throw new ArgumentException("Användaren avbröt.");
+                else if (int.TryParse(getInput, out userSelection) && userSelection > 0 && userSelection <= handler.Garages.Count)
+                    return userSelection;
+                else
+                    Console.WriteLine("Du måste ange ett giltigt val!\n");
             }
         }
-        static void RunGarageMenu(Garage selectedGarage, IGarageHandler handler)
+/*        static void RunGarageMenu(Garage selectedGarage, IGarageHandler handler)
         {
             var garageMenu = new Menu()
             {
@@ -126,8 +126,8 @@ namespace Garage_App.UI
                 }
             }
 
-        }
-        static void RunSearchMenu(Garage selectedGarage, IGarageHandler handler)
+        }*/
+/*        static void RunSearchMenu(Garage selectedGarage, IGarageHandler handler)
         {
             //Kolla att garaget inte är tomt
             if (selectedGarage.GetAvailableSpaces(false) == selectedGarage.Spaces)
@@ -169,8 +169,8 @@ namespace Garage_App.UI
                         break;
                 }
             }
-        }
-        static void RunSearchInVehiclesMenu(Garage selectedGarage, IGarageHandler handler)
+        }*/
+     /*   static void RunSearchInVehiclesMenu(Garage selectedGarage, IGarageHandler handler)
         {
             var searchMenu = new Menu()
             {
@@ -227,7 +227,7 @@ namespace Garage_App.UI
                         break;
                 }
             }
-        }
+        }*/
         /*static bool CheckIn(Garage garage)
         {
             int availableSpaces = garage.GetAvailableSpaces();
@@ -503,7 +503,7 @@ namespace Garage_App.UI
             }
             return userInput;
         }
-        static bool Populate(Garage newGarage, IGarageHandler handler)
+        static bool Populate(Garage<IVehicle> newGarage)
         {
             Console.WriteLine("Vill du populera garaget direkt? (y/n)");
             string userResponse = (Console.ReadLine() ?? "").Trim().ToLower();
