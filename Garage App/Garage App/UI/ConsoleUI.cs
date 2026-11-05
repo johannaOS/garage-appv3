@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Garage_App.GarageHandling;
+using Garage_App.VehicleHandling;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Garage_App.GarageHandling;
-using Garage_App.VehicleHandling;
+using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Garage_App.UI
 {
@@ -41,7 +43,10 @@ namespace Garage_App.UI
                                 //To do: Methods for collecting data for name and spaces for garage3
                                 //To do: handle name duplicates
                                 _handler.CreateNewGarage("namndummy", 1);
-                             //   To do: Populate(newGarage, _handler);
+                                while (Populate())
+                                {
+                                    Console.WriteLine("checka in här!");
+                                }
                                 break;
                             }
                             catch (Exception ex) { Console.WriteLine(ex.Message); break; }
@@ -503,20 +508,20 @@ namespace Garage_App.UI
             }
             return userInput;
         }
-        static bool Populate(Garage<IVehicle> newGarage)
+        static bool Populate()
         {
-            Console.WriteLine("Vill du populera garaget direkt? (y/n)");
-            string userResponse = (Console.ReadLine() ?? "").Trim().ToLower();
+            Console.WriteLine("Vill du checka in fordon direkt? (y/n)");
+            string userResponse = Regex.Replace((Console.ReadLine() ?? ""), @"\s+", " ");  // Replace multiple spaces with one
             while (userResponse != "y" && userResponse != "n")
             {
                 Console.WriteLine("Du måste ange 'y' eller 'n'!");
-                userResponse = (Console.ReadLine() ?? "").Trim().ToLower();
+                userResponse = Regex.Replace((Console.ReadLine() ?? ""), @"\s+", " ");
             }
             if (userResponse == "n")
                 return false;
             else
             {
-                Console.WriteLine($"Hur många fordon vill du populera garaget med? Max: {newGarage.Spaces}!");
+               /* Console.WriteLine($"Hur många fordon vill du populera garaget med? Max: {newGarage.Spaces}!");
                 int initPop;
                 while (!int.TryParse((Console.ReadLine() ?? "").Trim(), out initPop) || initPop <= 0 || initPop > newGarage.Spaces)
                     Console.WriteLine("Du måste ange ett giltigt antal!");
@@ -535,7 +540,7 @@ namespace Garage_App.UI
                         catch (Exception ex) { Console.WriteLine(ex.Message); }
                     }
                 }
-                Console.WriteLine("Då har du populerat klart ditt garage!\n");
+                Console.WriteLine("Då har du populerat klart ditt garage!\n");*/
                 return true;
             }
         }
